@@ -198,7 +198,7 @@ def getContinuousData(df, from_video, to_video, window_sec, fps = 30):
     #clean out the uneven size. There should be no uneven sized anyway because of the previous processing but keep it just for cahnce        
     for i, x in enumerate(X_temp):
         #print(x.shape)
-        if x.shape[0] == 360:
+        if x.shape[0] == window_sec * fps * 3* 2:
             X.append(x)
             Y.append(Y_temp[i])
     #print(len(X), len(Y))                      
@@ -238,9 +238,9 @@ if __name__ == '__main__':
     #random.shuffle(df)#could shuffle the files to mix the data before separating each session
 
 
-    window_sec = 2 # define the window of the gaze you need
+    window_sec = 1 # define the window of the gaze you need
                     
-    X_train, y_train = getContinuousData(df,  10, 110, window_sec) #make trainData
+    X_train, y_train = getContinuousData(df,  0, 110, window_sec) #make trainData
     X_test, y_test   = getContinuousData(df, 110, 155, window_sec) #make testData
 
     print("Train Data:")

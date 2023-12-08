@@ -106,7 +106,7 @@ def main():
     accuracies = []
     print("________________________")
     for epoch in range(epochs):
-        print(epoch)
+        print(epoch, ' out of ',epochs)
         train(trainLoader, model, criterion, optimizer, epoch)
         accuracy = val(testLoader, model, epoch)
         accuracies.append(accuracy)
@@ -115,6 +115,9 @@ def main():
             best_acc = accuracy
             torch.save(model.state_dict(), f'model_best.pth.tar')
     plt.plot(accuracies)
+    plt.title("Testing Accuracy")
+    plt.ylabel("Epochs")
+    plt.xlabel("Accuracy")
     plt.show()
 
 if __name__=='__main__':
@@ -135,13 +138,10 @@ if __name__=='__main__':
     hidden_dim = 256
     num_layers = 3
     output_dim = 9
-
-
-
+    
     model = FTransformer(input_dim, output_dim).cuda()
     criterion = nn.CrossEntropyLoss().cuda()
     optimizer = optim.Adam(model.parameters(), lr= learningRate)
-
     #endregion
 
     trainLoader = DataLoader(trainData, batch_size, shuffle=True)
@@ -150,10 +150,7 @@ if __name__=='__main__':
     indices = []
     l =[]
     from tensorboardX import SummaryWriter
-    foo = SummaryWriter(comment="GAU-ANN Vanilla")
-    
+    foo = SummaryWriter(comment="GAU-ANN Vanilla")   
     
     main()
-    plt.plot(indices,l)
-
-
+    

@@ -12,7 +12,9 @@ def loadData(path):
     
     
 class CustomDataset(Dataset):
-    def __init__(self, path):
+    def __init__(self, path, window, fps=30):
+        self.window = window
+        self.fps = fps
         self.data = loadData(path)
         self.labels = loadData(path.replace('X', 'y'))
                 
@@ -22,9 +24,11 @@ class CustomDataset(Dataset):
     def __getitem__(self, index):
         # print(index, len(self.data), len(self.labels))
         x = self.data[index]
+        frames = self.window * self.fps
         # print(x.shape)
-        x = np.array([x[0:60], x[60:120], x[120:180], x[180:240], x[240:300], x[300:360]], dtype= np.float32)
-        # print(x.shape)
+        x = np.array(         [x[0:frames],   x[frames:2*frames], x[frames*2:frames*3],
+                      x[frames*3:frames*4], x[frames*4:frames*5], x[frames*5:frames*6]], dtype= np.float32)
+    
         x = torch.FloatTensor(np.transpose(x))
         # print(x.shape)
         # print(self.labels[index])
