@@ -26,8 +26,8 @@ class CustomDataset(Dataset):
         x = self.data[index]
         frames = self.window * self.fps
         # print(x.shape)
-        x = np.array(         [x[0:frames],   x[frames:2*frames], x[frames*2:frames*3],
-                      x[frames*3:frames*4], x[frames*4:frames*5], x[frames*5:frames*6]], dtype= np.float32)
+        x = np.array(         [x[0:int(frames)],   x[int(frames):int(2*frames)], x[int(frames*2):int(frames*3)],
+                      x[int(frames*3):int(frames*4)], x[int(frames*4):int(frames*5)], x[int(frames*5):int(frames*6)]], dtype= np.float32)
     
         x = torch.FloatTensor(np.transpose(x))
         # print(x.shape)

@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 import torch
-torch.manual_seed(0)
+
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
@@ -10,7 +10,7 @@ import wandb
 
 
 
-
+torch.manual_seed(12321739)
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):
@@ -29,7 +29,7 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-def train(train_loader, model, criterion,optimizer, epoch):
+def train(train_loader, model, criterion, optimizer, epoch):
     losses = AverageMeter()
     model.train()
     #print('____________________________----')
@@ -39,20 +39,19 @@ def train(train_loader, model, criterion,optimizer, epoch):
         
         input = input.cuda()
         #print(input.shape)
+        if input.shape[0]!=32:
+            continue
         label = label.cuda()
         output = model(input)
         
         loss = criterion(output, label)
         loss.backward()
         losses.update(loss.item(), input.shape[0])
-        index  = (epoch*len(train_loader)* batch_size) + i
-        #print(index, losses.val)
-        l.append(losses.val)
-        indices.append(index)
-        foo.add_scalar("loss", losses.val, index)
+        
+        #foo.add_scalar("loss", losses.val, index)
         optimizer.step()
         if i%100 ==0:
-            print(f"Epoch {epoch+1}: Loss = {loss}")
+            print(f"Epoch {epoch+1}: Loss = {losses.avg}")
                 
 
 def val(testLoader, model, epoch):
@@ -96,17 +95,17 @@ def val(testLoader, model, epoch):
 
     acc = correct / total
     testAccuracy.update(acc)
-    foo.add_scalar('Accuracy',testAccuracy.val, epoch)
+    #foo.add_scalar('Accuracy',testAccuracy.val, epoch)
     print("Test Accuracy: ", acc, correct, total)
     return acc
 
 
-def main():
+def trainAndVal(model, trainLoader, testLoader, criterion ,optimizer, epochs):
     best_acc = 0
     accuracies = []
     print("________________________")
     for epoch in range(epochs):
-        print(epoch, ' out of ',epochs)
+        print('Epoch: ',epoch, ' out of ',epochs)
         train(trainLoader, model, criterion, optimizer, epoch)
         accuracy = val(testLoader, model, epoch)
         accuracies.append(accuracy)
@@ -114,32 +113,30 @@ def main():
         if accuracy> best_acc:
             best_acc = accuracy
             torch.save(model.state_dict(), f'model_best.pth.tar')
-    plt.plot(accuracies)
-    plt.title("Testing Accuracy")
-    plt.ylabel("Epochs")
-    plt.xlabel("Accuracy")
-    plt.show()
+    # plt.plot(accuracies)
+    # plt.title("Testing Accuracy")
+    # plt.ylabel("Epochs")
+    # plt.xlabel("Accuracy")
+    # plt.show()
+    return accuracies
 
-if __name__=='__main__':
-    
+def runModel(window_sec):
     trainPath = './X_train.pth.tar'
     testPath = './X_test.pth.tar'
 
-    trainData = CustomDataset(trainPath)
-    testData = CustomDataset(testPath)
+    trainData = CustomDataset(trainPath, window_sec)
+    testData = CustomDataset(testPath, window_sec)
 
 
     #region hyperparameters
-    epochs = 11
+    epochs = 20
     batch_size = 32
     learningRate = 1e-5
 
     input_dim = 6
-    hidden_dim = 256
-    num_layers = 3
     output_dim = 9
     
-    model = FTransformer(input_dim, output_dim).cuda()
+    model = FTransformer(input_dim, window_sec,  output_dim).cuda()
     criterion = nn.CrossEntropyLoss().cuda()
     optimizer = optim.Adam(model.parameters(), lr= learningRate)
     #endregion
@@ -147,10 +144,12 @@ if __name__=='__main__':
     trainLoader = DataLoader(trainData, batch_size, shuffle=True)
     testLoader = DataLoader(testData, batch_size, shuffle=True)
 
-    indices = []
-    l =[]
-    from tensorboardX import SummaryWriter
-    foo = SummaryWriter(comment="GAU-ANN Vanilla")   
+    # from tensorboardX import SummaryWriter
+    # foo = SummaryWriter(comment="GAU-ANN Vanilla")   
     
-    main()
+    return trainAndVal(model, trainLoader, testLoader, criterion, optimizer, epochs)
+
+if __name__=='__main__':
+    window = 1.5
+    runModel(window)
     

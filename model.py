@@ -44,10 +44,10 @@ class LSTModelANN(nn.Module):
 from flash_pytorch import FLASH
 
 class FTransformer(torch.nn.Module):
-    def __init__(self, input_dim, num_classes):
+    def __init__(self, input_dim, window_sec,num_classes):
         super(FTransformer, self).__init__()
         self.flash = FLASH(
-            dim = 6,
+            dim = input_dim,
             group_size = 256,             # group size
             causal = True,                # autoregressive or not
             query_key_dim = 128,          # query / key dimension
@@ -56,7 +56,7 @@ class FTransformer(torch.nn.Module):
                     )
         self.flat = nn.Flatten()  
         self.fc_layer = nn.Sequential(
-                            nn.Linear(360, 1024),
+                            nn.Linear(int(window_sec*30*3*2), 1024),
                             nn.BatchNorm1d(1024),
                             nn.ReLU(),
                             nn.Linear(1024, 512),
