@@ -38,7 +38,6 @@ def buildAndRunDetectDisc(windows):
     with open('Detection_Results_Discrete.tar', 'wb') as handle:
         pickle.dump(accc_dict, handle)
     
-
 def buildAndRunPredict(windows):
     accc_dict = {}
     for params in windows:
@@ -51,9 +50,22 @@ def buildAndRunPredict(windows):
         accuracies = runModel(window)
 
         accc_dict[(window, future)] = {"train_size": train_size, 'test_size': test_size, 'acc':accuracies}
-        
+
+def buildAndRunPredictv2(windows):
+    accc_dict = {}
+    for params in windows:
+        window = params[0]
+        future = params[1]
+        #build the data files
+        print("Window Size: ", window, "Future Window Size: ", future)
+        train_size, test_size = buildData(window, 'p2', future)
+        #run the model and show the results
+        accuracies = runModel(window)
+
+        accc_dict[(window, future)] = {"train_size": train_size, 'test_size': test_size, 'acc':accuracies}
+                
     
-    with open('Prediction_Results.tar', 'wb') as handle:
+    with open('Predictionv2_Results.tar', 'wb') as handle:
         pickle.dump(accc_dict, handle)
 
 if __name__ == '__main__':
@@ -65,11 +77,11 @@ if __name__ == '__main__':
     
     windows = []
     if mode == 'dd':
-        windows = [0.5, 1.0, 1.5, 2.0]
+        windows = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
         print("Building 2 samples from a single turn and training detection model for following windows: ", windows)
         buildAndRunDetectDisc(windows)
     elif mode == 'dc':
-        windows = [0.5, 1.0, 1.5, 2.0]
+        windows = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
         print("Building max number of samples from a single turn and training detection model for following windows: ", windows)
         buildAndRunDetectCont(windows)
     elif mode == 'p':
@@ -77,5 +89,13 @@ if __name__ == '__main__':
         windows = [(1.0,0.25), (1.0, 0.5), (1.0,0.75), (1.0, 1.0)] 
         print("Building 2 samples from a single turn and training prediction model for following window length and future length pairs: ", windows)
         buildAndRunPredict(windows)
+    elif mode == 'p2':
+        #the way current code is written this cannot work for the situation when total time is greate than 2 so should rewrite the build and predict function in the build file
+        windows = [(2.0,0.25), (2.0, 0.5), (2.0,0.75), (2.0, 1.0)] 
+        print("Building 2 samples from a single turn and training prediction model for following window length and future length pairs: ", windows)
+        buildAndRunPredictv2(windows)
+    else:
+        ValueError("Wrong Parameter")    
+    
     
     

@@ -6,7 +6,6 @@ import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from data_loader import CustomDataset
 from model import FTransformer
-import wandb
 
 
 
@@ -50,7 +49,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         
         #foo.add_scalar("loss", losses.val, index)
         optimizer.step()
-        if i%100 ==0:
+        if i%1000 ==0:
             print(f"Epoch {epoch+1}: Loss = {losses.avg}")
                 
 
@@ -129,7 +128,7 @@ def runModel(window_sec):
 
 
     #region hyperparameters
-    epochs = 20
+    epochs = 10
     batch_size = 32
     learningRate = 1e-5
 

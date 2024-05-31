@@ -1,0 +1,12 @@
+- Change writing from comparing to discovering
+- Addd the landmark data in the input for the model along with gaze and pose
+-Try only head pose instead of whole pose
+
+
+- First work out the paper by the end of this year not by the end of year from now
+
+- Make more comparisions
+    -variation of windows of time used
+    -variation of future_predicted_time values
+    -variations of input to the models
+    - use 0.5 time steps
