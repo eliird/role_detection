@@ -125,8 +125,20 @@ class ANN(nn.Module):
 class CNN1DModel(nn.Module):
     def __init__(self, input_dim, num_filters, kernel_size, output_dim):
         super(CNN1DModel, self).__init__()
-        self.conv_layer = nn.Sequential(
+        self.conv_layer1 = nn.Sequential(
             nn.Conv1d(in_channels=input_dim, out_channels=num_filters, kernel_size=kernel_size),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2)
+        )
+
+        self.conv_layer2 = nn.Sequential(
+            nn.Conv1d(in_channels=num_filters, out_channels=num_filters, kernel_size=kernel_size),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2)
+        )
+
+        self.conv_layer3 = nn.Sequential(
+            nn.Conv1d(in_channels=num_filters, out_channels=num_filters, kernel_size=kernel_size),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2)
         )
@@ -146,7 +158,10 @@ class CNN1DModel(nn.Module):
         #print((num_filters+1), (num_filters+1)*28)
 
     def forward(self, x):
-        x = self.conv_layer(x)
+        x = self.conv_layer1(x)
+        x = self.conv_layer2(x)
+        x = self.conv_layer3(x)
+
         #print(x.shape)
         x = x.view(x.size(0), -1)
         #print(x.shape)

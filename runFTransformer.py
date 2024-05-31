@@ -128,7 +128,7 @@ def runModel(window_sec):
 
 
     #region hyperparameters
-    epochs = 10
+    epochs = 25
     batch_size = 32
     learningRate = 1e-5
 

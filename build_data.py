@@ -128,8 +128,8 @@ def getSampledData(df, st, end, window, fps=30):
     X_train = np.array(x_train)
     y_train = np.array(y_train)
 
-        
     return X_train,y_train
+
 
 def getContinuousData(df, from_video, to_video, window_sec, fps = 30):
     
@@ -143,7 +143,12 @@ def getContinuousData(df, from_video, to_video, window_sec, fps = 30):
     window_frames = int(window_sec*fps)
     
     for video in tqdm(range(from_video, to_video)):#len(df)
-        #loop over all the 5 minute video files
+        
+        # to loop back and get data from start for different folds of validation
+        if video >= len(df):
+            video = video - len(df)
+        
+        # loop over all the 5 minute video files
         for loc in range(len(df[video]) -1):
 
             #loop over all the turns in the video and get the gaze and the role from the data frame
@@ -447,7 +452,7 @@ def getPredictDatav2(df, from_video, to_video, window_sec, future_sec, fps=30):
     y_train = np.array(y_train)
     return X_train, y_train 
 
-def buildData(window_sec, mode, future =2):
+def buildData(window_sec, mode, future =2, train_start=0, train_end=110, test_start=110, test_end=155):
     #open the file containing the gaze information
     df = [] 
     with open(r'df_updated.pth.tar', 'rb') as handle:
@@ -457,8 +462,8 @@ def buildData(window_sec, mode, future =2):
     #window_sec = 1 # define the window of the gaze you need
     X_train, y_train, X_test, y_test = [],[],[],[]
     if mode == 'dc': 
-        X_train, y_train = getContinuousData(df,  0, 110, window_sec) #make trainData
-        X_test, y_test   = getContinuousData(df, 110, 155, window_sec) #make testData
+        X_train, y_train = getContinuousData(df,  train_start, train_end, window_sec) #make trainData
+        X_test, y_test   = getContinuousData(df, test_start, test_end, window_sec) #make testData
     elif mode =='p':
         X_train, y_train = getPredictData(df,   0, 110, window_sec, future) #make trainData
         X_test, y_test   = getPredictData(df, 110, 155, window_sec, future) #make testData
