@@ -119,7 +119,7 @@ def trainAndVal(model, trainLoader, testLoader, criterion ,optimizer, epochs):
     # plt.show()
     return accuracies
 
-def runModel(window_sec):
+def runModel(window_sec, model):
     trainPath = './X_train.pth.tar'
     testPath = './X_test.pth.tar'
 

@@ -2,9 +2,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
-
+from flash_pytorch import FLASH
 import torch
 import torch.nn as nn
+
 
 class LSTModel(nn.Module):
     def __init__(self, input_dim, hidden_dim, num_layers, output_dim):
@@ -13,9 +14,11 @@ class LSTModel(nn.Module):
         self.fc = nn.Linear(hidden_dim, output_dim)
     
     def forward(self, x):
+        x = x.reshape(x.size(0), 60, 6)
         out, _ = self.lstm(x)
         out = self.fc(out[:, -1, :])  # Taking the last time step's output
         return out
+
 
 class LSTModelANN(nn.Module):
     def __init__(self, input_dim, hidden_dim, num_layers, output_dim):
@@ -41,7 +44,6 @@ class LSTModelANN(nn.Module):
         out = self.relu4(out)
         return out
 
-from flash_pytorch import FLASH
 
 class FTransformer(torch.nn.Module):
     def __init__(self, input_dim, window_sec,num_classes):
@@ -98,10 +100,12 @@ class FTransformerLSTM(torch.nn.Module):
                     )
         self.flat = nn.Flatten()  
         self.lstm = LSTModel(6, 256, 2, 9)
+    
     def forward(self, x):
         x =self.flash(x)
         x = self.lstm(x)
         return x
+
 
 class ANN(nn.Module):
     def __init__(self, layer_sizes):
@@ -121,7 +125,7 @@ class ANN(nn.Module):
             x = torch.relu(x)
         return x
     
-    
+
 class CNN1DModel(nn.Module):
     def __init__(self, input_dim, num_filters, kernel_size, output_dim):
         super(CNN1DModel, self).__init__()

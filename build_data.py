@@ -334,7 +334,7 @@ def getPredictData(df, from_video, to_video, window_sec, future_sec, fps=30):
     y_train = np.array(y_train)
     return X_train, y_train 
     
-#ToDO Implement it in a way to handle for turns longer than 2 seconds
+#OoDO Implement it in a way to handle for turns longer than 2 seconds
 def getPredictDatav2(df, from_video, to_video, window_sec, future_sec, fps=30):
     X, Y = [], []
     
@@ -452,6 +452,7 @@ def getPredictDatav2(df, from_video, to_video, window_sec, future_sec, fps=30):
     y_train = np.array(y_train)
     return X_train, y_train 
 
+
 def buildData(window_sec, mode, future =2, train_start=0, train_end=110, test_start=110, test_end=155):
     #open the file containing the gaze information
     df = [] 
@@ -507,6 +508,7 @@ def buildData(window_sec, mode, future =2, train_start=0, train_end=110, test_st
     file.close()
     
     return (X_train.shape, X_test.shape)
+
 
 if __name__ == '__main__':
     
