@@ -79,8 +79,6 @@ def build_run_validate_cont(windows):
         #build the data files
         print("Window Size: ", window)
         for i in range(11):
-            if i <2:
-                continue
             train_start = 0 + i * 10 
             train_end =  110 + (i*10)
             test_start = train_end
