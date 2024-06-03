@@ -32,7 +32,7 @@ def cart2sph3Arr(g1,g2,g3):
     
     return (g1, g2, g3)        
 
-def getSampledData(df, st, end, window, fps=30):
+def getSampledData(df, st, end, window, fps=30, mode='train'):
     X = []
     Y = []
     print(st, end)
@@ -65,15 +65,16 @@ def getSampledData(df, st, end, window, fps=30):
                                         g1[start:limit,1], g2[start:limit, 1],g3[start:limit, 1]),
                                         axis =0))
                 Y.append([r1, r2, r3])
-                X.append(np.concatenate((g2[start:limit, 0], g3[start:limit, 0],g1[start:limit, 0],
-                                        g2[start:limit,1], g3[start:limit, 1],g1[start:limit, 1]), 
-                                        axis= 0))
-                Y.append([r2, r3, r1])
-                X.append(np.concatenate((g3[start:limit, 0], g1[start:limit, 0],g2[start:limit, 0],
-                                        g3[start:limit, 1], g1[start:limit, 1],g2[start:limit, 1]),
-                                        axis=0))
-                Y.append([r3,r1,r2])
-                
+                if mode != 'train':
+                    X.append(np.concatenate((g2[start:limit, 0], g3[start:limit, 0],g1[start:limit, 0],
+                                            g2[start:limit,1], g3[start:limit, 1],g1[start:limit, 1]), 
+                                            axis= 0))
+                    Y.append([r2, r3, r1])
+                    X.append(np.concatenate((g3[start:limit, 0], g1[start:limit, 0],g2[start:limit, 0],
+                                            g3[start:limit, 1], g1[start:limit, 1],g2[start:limit, 1]),
+                                            axis=0))
+                    Y.append([r3,r1,r2])
+                    
                 
                 #############################################
             limit = int(90 + (window+1)*fps)
@@ -90,15 +91,16 @@ def getSampledData(df, st, end, window, fps=30):
                                         g1[start:limit,1], g2[start:limit, 1],g3[start:limit, 1]),
                                         axis =0))
                 Y.append([r1, r2, r3])
-                X.append(np.concatenate((g2[start:limit, 0], g3[start:limit, 0],g1[start:limit, 0],
-                                        g2[start:limit,1], g3[start:limit, 1],g1[start:limit, 1]), 
-                                        axis= 0))
-                Y.append([r2, r3, r1])
-                X.append(np.concatenate((g3[start:limit, 0], g1[start:limit, 0],g2[start:limit, 0],
-                                        g3[start:limit, 1], g1[start:limit, 1],g2[start:limit, 1]),
-                                        axis=0))
-                Y.append([r3, r1, r2])
-                
+                if mode != 'train':
+                    X.append(np.concatenate((g2[start: limit, 0], g3[start: limit, 0], g1[start: limit, 0],
+                                             g2[start: limit, 1], g3[start: limit, 1], g1[start: limit, 1]), 
+                                            axis= 0))
+                    Y.append([r2, r3, r1])
+                    X.append(np.concatenate((g3[start: limit, 0], g1[start: limit, 0],g2[start: limit, 0],
+                                             g3[start: limit, 1], g1[start: limit, 1],g2[start: limit, 1]),
+                                            axis=0))
+                    Y.append([r3, r1, r2])
+                    
     #X = np.array(X)
     #Y = np.array(Y)
     x_train = []
@@ -131,7 +133,7 @@ def getSampledData(df, st, end, window, fps=30):
     return X_train,y_train
 
 
-def getContinuousData(df, from_video, to_video, window_sec, fps = 30):
+def getContinuousData(df, from_video, to_video, window_sec, fps = 30, mode='train'):
     
     '''
     Make DataSet for divinding each turn into frame chunks 
@@ -181,19 +183,25 @@ def getContinuousData(df, from_video, to_video, window_sec, fps = 30):
                     #print(video, loc, limit, limitEnd)
                     break
                 #print(limitEnd-limit)
-                X.append(np.concatenate((g1[start:limit,0], g2[start:limit, 0],g3[start:limit, 0],
-                                         g1[start:limit,1], g2[start:limit, 1],g3[start:limit, 1]),
-                                        axis =0))
-                Y.append([r1, r2, r3])
-                X.append(np.concatenate((g2[start:limit, 0], g3[start:limit, 0],g1[start:limit, 0],
-                                        g2[start:limit,1], g3[start:limit, 1],g1[start:limit, 1]), 
-                                        axis= 0))
-                Y.append([r2, r3, r1])
-                X.append(np.concatenate((g3[start:limit, 0], g1[start:limit, 0],g2[start:limit, 0],
-                                        g3[start:limit, 1], g1[start:limit, 1],g2[start:limit, 1]),
-                                        axis=0))
-                Y.append([r3, r1, r2])
-                
+                if mode =='test':
+                # if mode is not None: # == 'train':
+                    X.append(np.concatenate((g1[start:limit,0], g2[start:limit, 0],g3[start:limit, 0],
+                                            g1[start:limit,1], g2[start:limit, 1],g3[start:limit, 1]),
+                                            axis =0))
+                    Y.append([r1, r2, r3])
+                #if mode is not None: # != 'train':
+                if mode == 'train':
+                    X.append(np.concatenate((g2[start:limit, 0], g3[start:limit, 0],g1[start:limit, 0],
+                                            g2[start:limit,1], g3[start:limit, 1],g1[start:limit, 1]), 
+                                            axis= 0))
+                    Y.append([r2, r3, r1])
+                # if mode is not None: # != 'train':
+                if mode =='test':
+                    X.append(np.concatenate((g3[start:limit, 0], g1[start:limit, 0],g2[start:limit, 0],
+                                            g3[start:limit, 1], g1[start:limit, 1],g2[start:limit, 1]),
+                                            axis=0))
+                    Y.append([r3, r1, r2])
+                    
     #print(len(X), len(Y))          
     X_temp = X.copy()
     Y_temp = Y.copy()
@@ -464,7 +472,7 @@ def buildData(window_sec, mode, future =2, train_start=0, train_end=110, test_st
     X_train, y_train, X_test, y_test = [],[],[],[]
     if mode == 'dc': 
         X_train, y_train = getContinuousData(df,  train_start, train_end, window_sec) #make trainData
-        X_test, y_test   = getContinuousData(df, test_start, test_end, window_sec) #make testData
+        X_test, y_test   = getContinuousData(df, test_start, test_end, window_sec, mode='test') #make testData
     elif mode =='p':
         X_train, y_train = getPredictData(df,   0, 110, window_sec, future) #make trainData
         X_test, y_test   = getPredictData(df, 110, 155, window_sec, future) #make testData

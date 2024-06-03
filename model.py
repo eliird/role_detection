@@ -33,6 +33,7 @@ class LSTModelANN(nn.Module):
         self.relu2 = nn.ReLU()
         self.relu3 = nn.ReLU()
         self.relu4 = nn.ReLU()
+
     def forward(self, x):
         out, _ = self.lstm(x)
         out = self.fc(out[:, -1, :])  # Taking the last time step's output
@@ -61,18 +62,25 @@ class FTransformer(torch.nn.Module):
                             nn.Linear(int(window_sec*30*3*2), 1024),
                             nn.BatchNorm1d(1024),
                             nn.ReLU(),
+                            nn.Dropout(0.1),
                             nn.Linear(1024, 512),
                             nn.BatchNorm1d(512),
                             nn.ReLU(),
+                            nn.Dropout(0.1),
                             nn.Linear(512, 256),
                             nn.BatchNorm1d(256),
                             nn.ReLU(),
+                            nn.Dropout(0.1),
+
                             nn.Linear(256,128),
                             nn.BatchNorm1d(128),
                             nn.ReLU(),
+                            nn.Dropout(0.1),
+
                             nn.Linear(128,64),
                             nn.BatchNorm1d(64),
                             nn.ReLU(),
+                            nn.Dropout(0.1),
                             nn.Linear(64,32),
                             nn.BatchNorm1d(32),
                             nn.ReLU(),
@@ -110,6 +118,7 @@ class FTransformerLSTM(torch.nn.Module):
 class ANN(nn.Module):
     def __init__(self, layer_sizes):
         super(ANN, self).__init__()
+        self.flatten = nn.Flatten()
         self.layers = nn.ModuleList()
         self.normLayers = nn.ModuleList()
         #self.bn = [nn.BatchNorm1d(1024), nn.BatchNorm1d(512), nn.BatchNorm1d(256), nn.BatchNorm1d(128), nn.BatchNorm1d(64), nn.BatchNorm1d(32)]
@@ -118,6 +127,7 @@ class ANN(nn.Module):
             self.layers.append(nn.Linear(layer_sizes[i], layer_sizes[i+1]))
             self.normLayers.append(nn.BatchNorm1d(layer_sizes[i+1]))
     def forward(self, x):
+        x = self.flatten(x)
         for i, layer in enumerate(self.layers):
             x = layer(x)
             if i!= len(self.layers) -1:

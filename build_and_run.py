@@ -1,8 +1,12 @@
 import pickle
 import sys
 from pathlib import Path
+
+import numpy as np
+import torch
 from build_data import buildData
 from runFTransformer import runModel
+
 
 
 def buildAndRunDetectCont(windows):
@@ -75,6 +79,8 @@ def build_run_validate_cont(windows):
         #build the data files
         print("Window Size: ", window)
         for i in range(11):
+            if i <2:
+                continue
             train_start = 0 + i * 10 
             train_end =  110 + (i*10)
             test_start = train_end
@@ -90,6 +96,10 @@ def build_run_validate_cont(windows):
 
 
 if __name__ == '__main__':
+    seed = 111
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+
     args = sys.argv   
     if len(args) < 2:
         print("Wrong number of arguments, please specify the window size in seconds")

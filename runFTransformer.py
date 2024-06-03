@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from data_loader import CustomDataset
-from model import FTransformer
+from model import FTransformer, ANN
 
 
 
@@ -119,7 +119,7 @@ def trainAndVal(model, trainLoader, testLoader, criterion ,optimizer, epochs):
     # plt.show()
     return accuracies
 
-def runModel(window_sec, model):
+def runModel(window_sec):
     trainPath = './X_train.pth.tar'
     testPath = './X_test.pth.tar'
 
@@ -134,6 +134,9 @@ def runModel(window_sec, model):
 
     input_dim = 6
     output_dim = 9
+    
+    # model = ANN([360, 1024, 512, 256, 128, 64, 9]).cuda()
+    # model = ANN([360, 512, 256, 128, 64, 9]).cuda()
     
     model = FTransformer(input_dim, window_sec,  output_dim).cuda()
     criterion = nn.CrossEntropyLoss().cuda()
