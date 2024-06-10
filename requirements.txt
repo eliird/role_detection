@@ -1,4 +1,6 @@
 torch
 FLASH-pytorch
-matlplotlib
+matplotlib
 numpy
+pandas
+tqdm

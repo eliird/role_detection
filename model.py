@@ -14,7 +14,7 @@ class LSTModel(nn.Module):
         self.fc = nn.Linear(hidden_dim, output_dim)
     
     def forward(self, x):
-        x = x.reshape(x.size(0), 60, 6)
+        # x = x.reshape(x.size(0), 60, 6)
         out, _ = self.lstm(x)
         out = self.fc(out[:, -1, :])  # Taking the last time step's output
         return out
@@ -47,19 +47,27 @@ class LSTModelANN(nn.Module):
 
 
 class FTransformer(torch.nn.Module):
-    def __init__(self, input_dim, window_sec,num_classes):
+    def __init__(self, input_dim, window_sec,num_classes, inp_mode):
         super(FTransformer, self).__init__()
         self.flash = FLASH(
             dim = input_dim,
             group_size = 256,             # group size
-            causal = True,                # autoregressive or not
+            causal = False,                # autoregressive or not
             query_key_dim = 128,          # query / key dimension
             expansion_factor = 2.,        # hidden dimension = dim * expansion_factor
             laplace_attn_fn = True   # new Mega paper claims this is more stable than relu squared as attention function
                     )
-        self.flat = nn.Flatten()  
+        self.flat = nn.Flatten()
+        if inp_mode == 'siso':
+            n_in_person = 1
+        elif inp_mode == 'diso':
+            n_in_person = 2
+        elif inp_mode == 'tiso':
+            n_in_person = 3
+        else:
+            n_in_person = 3
         self.fc_layer = nn.Sequential(
-                            nn.Linear(int(window_sec*30*3*2), 1024),
+                            nn.Linear(int(window_sec*30*n_in_person*2), 1024),
                             nn.BatchNorm1d(1024),
                             nn.ReLU(),
                             nn.Dropout(0.1),
@@ -85,7 +93,7 @@ class FTransformer(torch.nn.Module):
                             nn.BatchNorm1d(32),
                             nn.ReLU(),
                             nn.Linear(32,num_classes),
-                            nn.ReLU()
+                            # nn.ReLU()
             # Adjust 28 based on the chosen kernel size and sequence length
                                     ) 
     def forward(self, x):
@@ -125,14 +133,17 @@ class ANN(nn.Module):
         
         for i in range(len(layer_sizes) - 1):
             self.layers.append(nn.Linear(layer_sizes[i], layer_sizes[i+1]))
-            self.normLayers.append(nn.BatchNorm1d(layer_sizes[i+1]))
+
+            if i != len(layer_sizes) - 2:
+                self.normLayers.append(nn.BatchNorm1d(layer_sizes[i+1]))
+
     def forward(self, x):
         x = self.flatten(x)
         for i, layer in enumerate(self.layers):
             x = layer(x)
             if i!= len(self.layers) -1:
                 x = self.normLayers[i](x)
-            x = torch.relu(x)
+                x = torch.relu(x)
         return x
     
 
@@ -157,7 +168,7 @@ class CNN1DModel(nn.Module):
             nn.MaxPool1d(kernel_size=2)
         )
         self.fc_layer = nn.Sequential(
-            nn.Linear((num_filters) * 29, 512),
+            nn.Linear((num_filters) * 5, 512),
             nn.ReLU(),
             nn.Linear(512, 256),
             nn.ReLU(),
@@ -166,12 +177,13 @@ class CNN1DModel(nn.Module):
             nn.Linear(128,32),
             nn.ReLU(),
             nn.Linear(32,output_dim),
-            nn.ReLU()
+            # nn.ReLU()
             # Adjust 28 based on the chosen kernel size and sequence length
         )
         #print((num_filters+1), (num_filters+1)*28)
 
     def forward(self, x):
+        x = x.transpose(1, 2)
         x = self.conv_layer1(x)
         x = self.conv_layer2(x)
         x = self.conv_layer3(x)

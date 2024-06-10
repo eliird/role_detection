@@ -12,9 +12,10 @@ def loadData(path):
     
     
 class CustomDataset(Dataset):
-    def __init__(self, path, window, fps=30):
+    def __init__(self, path, window, inp_mode, fps=30):
         self.window = window
         self.fps = fps
+        self.inp_mode = inp_mode
         self.data = loadData(path)
         self.labels = loadData(path.replace('X', 'y'))
                 
@@ -25,9 +26,36 @@ class CustomDataset(Dataset):
         # print(index, len(self.data), len(self.labels))
         x = self.data[index]
         frames = self.window * self.fps
-        # print(x.shape)
-        x = np.array(         [x[0:int(frames)],   x[int(frames):int(2*frames)], x[int(frames*2):int(frames*3)],
-                      x[int(frames*3):int(frames*4)], x[int(frames*4):int(frames*5)], x[int(frames*5):int(frames*6)]], dtype= np.float32)
+        if self.inp_mode == 'siso':
+            x = np.array([
+                x[0:int(frames)],
+                x[int(frames):int(2*frames)]
+            ], dtype= np.float32)
+        elif self.inp_mode == 'diso':
+            x = np.array([
+                x[0:int(frames)],
+                x[int(frames):int(2*frames)], 
+                x[int(frames*2):int(frames*3)],
+                x[int(frames*3):int(frames*4)]
+            ], dtype= np.float32)
+        elif self.inp_mode == 'tiso':
+            x = np.array([
+                x[0:int(frames)],
+                x[int(frames):int(2*frames)], 
+                x[int(frames*2):int(frames*3)],
+                x[int(frames*3):int(frames*4)],
+                x[int(frames*4):int(frames*5)],
+                x[int(frames*5):int(frames*6)]
+            ], dtype= np.float32)
+        else:
+            x = np.array([
+                x[0:int(frames)],
+                x[int(frames):int(2*frames)], 
+                x[int(frames*2):int(frames*3)],
+                x[int(frames*3):int(frames*4)], 
+                x[int(frames*4):int(frames*5)], 
+                x[int(frames*5):int(frames*6)]
+            ], dtype= np.float32)
     
         x = torch.FloatTensor(np.transpose(x))
         # print(x.shape)
