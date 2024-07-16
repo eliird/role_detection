@@ -1,7 +1,7 @@
 # Conversational-Role-Detection
 
 This is the repository for the paper titled 
->Is it possible to recognize speaker without listening?
+>Is it possible to recognize speaker without listening? Understanding conversation dynamics using continuous eyegaze.
 
 ## Link to paper
     [paper](https://eliird.lol)
