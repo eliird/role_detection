@@ -50,7 +50,14 @@ The gaze is stored as string the in the format of `x-frame1, y-frame1, z-frame1,
 The image below shows how data is segmented from the dataframes
 
 
-![This image explains the preprocessing of the gaze data](./imgs/Data Segmentation Detection.jpg)
+![This image explains the preprocessing of the gaze data](/imgs/DataSegmentationDetection.jpg)
+
+# Model
+
+The image shows the architecture of the best performing `role detection systm`.
+
+
+![Model Image](/imgs/MODELBLOCKDIAGRAM.png)
 
 
 # Installation
