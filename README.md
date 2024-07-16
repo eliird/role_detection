@@ -1,5 +1,8 @@
 # Conversational-Role-Detection
 
+This is the repository for the paper titled >Is it possible to recognize speaker without listening?
+## Link to paper
+    -TODO Add the link to the paper
 ## Dependencies
 python=3.11\
 `pip install -r requirements.txt`
