@@ -1,8 +1,12 @@
 # Conversational-Role-Detection
 
-This is the repository for the paper titled >Is it possible to recognize speaker without listening?
+This is the repository for the paper titled 
+>Is it possible to recognize speaker without listening?
+
 ## Link to paper
     -TODO Add the link to the paper
+## Abstract
+This study investigates the feasibility of understanding conversation dynamics in multi-party interactions without relying on auditory cues, focusing on continuous eye gaze as a key non-verbal communication modality. Without converting gaze into binary features, the study aims to explore the richness of continuous eye gaze information to discern diverse conversation dynamics. We employ eye gaze data from a video dataset featuring interactions among three individuals to identify distinct roles they take during a conversation, including the speaker, main listener (or addressee), and sub-listener (or side-participant). We constructed a system that utilizes continuous gaze from the three individuals for detecting roles taken by them throughout the conversations, and investigated various model configurations.Our findings demonstrate promising results, showing accuracy of 81.5% for the best model with an input window length of 2 seconds, in detecting conversation dynamics using eye gaze only. This study contributes valuable insights into the need of studying non-verbal communication cues in a continuous fashion, offering practical implications for diverse fields, including human-computer interaction and social robotics.
 ## Dependencies
 python=3.11\
 `pip install -r requirements.txt`
